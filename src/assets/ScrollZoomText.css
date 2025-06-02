@@ -1,0 +1,30 @@
+.scroll-zoom-container {
+    font-family: Arial, sans-serif;
+}
+
+.zoom-section {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f0f0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.zoom-container {
+    text-align: center;
+}
+
+.zoom-text {
+    font-size: 2rem;
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+    will-change: transform, opacity; /* Optimizes animations */
+    transform-origin: center center;
+}
+
+.content {
+    padding: 50px;
+    height: 200vh; /* Makes page scrollable */
+    background: white;
+}
