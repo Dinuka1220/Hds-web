@@ -1,42 +1,147 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import Lenis from '@studio-freight/lenis';
-import herobg from '../assets/herobg new1.png'
-import secondimg from '../assets/secondimg.jpg'
+import herobg from '../assets/herobg new1.png';
+import secondimg from '../assets/secondimg.jpg';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import icon1 from "../assets/images/design (2).png"
+import icon2 from "../assets/images/web-programming.png"
+import icon3 from "../assets/images/pen-tool.png"
+import icon4 from "../assets/images/seo (1).png"
 
 const ProductionWizards = () => {
+    // Refs
     const heroBackgroundRef = useRef(null);
-    // const heroTitleRef = useRef(null);
-    // const heroDescRef = useRef(null);
-    // const contactBtnRef = useRef(null);
     const showreelRef = useRef(null);
     const showreelTitleRef = useRef(null);
-    const showreelContentRef = useRef(null);
-    // const lastScrollY = useRef(0);
-    const [ setIsLoading] = useState(true);
+    const servicesSectionRef = useRef(null);
     const headingRef = useRef(null);
-    const paragraphRef = useRef(null);
-    const buttonRef = useRef(null);
     const heroContentRef = useRef(null);
-    // const [currentTagIndex, setCurrentTagIndex] = useState(0);
 
+    // State
+    const [isLoading, setIsLoading] = useState(true);
+    const [currentTagIndex, setCurrentTagIndex] = useState(0);
+    const [displayText, setDisplayText] = useState('');
+    const [isTyping, setIsTyping] = useState(true);
+    const [heroBgImage, setHeroBgImage] = useState(herobg);
+    const [servicesInView, setServicesInView] = useState(false);
+
+
+    // Data
     const tags = ['WEB DEVELOPMENT', 'UI/UX DESIGN', 'GRAPHIC DESIGN'];
-    const [heroBgImage, setHeroBgImage] = useState(
-        herobg
-    );
+    const services = [
+        {
+            icon: (
+                <div className="w-12 h-12  rounded-lg flex items-center justify-center mb-4">
+                    <img src={icon1} />
+                </div>
+            ),
+            title: "Web Design / Redesign",
+            description: "We create stunning, user-friendly websites that convert visitors into customers with modern designs and intuitive interfaces."
+        },
+        {
+            icon: (
+                <div className="w-12 h-12  rounded-lg flex items-center justify-center mb-4">
+                    <div className="text-white">
+                        <img src={icon2} />
+                    </div>
+                </div>
+            ),
+            title: "Web Development",
+            description: "Custom web applications built with cutting-edge technologies for performance, scalability and security."
+        },
+        {
+            icon: (
+                <div className="w-12 h-12  rounded-lg flex items-center justify-center mb-4">
+                    <div className="text-white">
+                        <img src={icon3} />
+                    </div>
+                </div>
+            ),
+            title: "Graphic Design",
+            description: "Eye-catching visual identities, logos and branding materials that make your business stand out."
+        },
+        {
+            icon: (
+                <div className="w-12 h-12  rounded-lg flex items-center justify-center mb-4">
+                    <div className="text-white">
+                        <img src={icon4} />
+                    </div>
+                </div>
+            ),
+            title: "SEO Services",
+            description: "Data-driven marketing strategies that increase your online visibility and drive qualified leads."
+        }
+    ];
 
+    const progressItems = [
+        { label: "Web Design", percentage: 95 },
+        { label: "UI/UX Design", percentage: 90 },
+        { label: "Frontend Development", percentage: 85 },
+        { label: "Branding", percentage: 88 }
+    ];
+
+    // Animation variants
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1,
+                delayChildren: 0.3,
+            },
+        },
+    };
+
+    const fadeUpVariants = {
+        hidden: { opacity: 0, y: 30 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.8,
+                ease: [0.6, -0.05, 0.01, 0.99],
+            },
+        },
+    };
+
+    const fadeInVariants = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1 }
+    };
+
+    const textRevealVariants = {
+        hidden: { opacity: 0, y: 50 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 1,
+                ease: "easeOut"
+            }
+        }
+    };
+
+    const progressBarVariants = {
+        hidden: { width: 0 },
+        visible: (percentage) => ({
+            width: `${percentage}%`,
+            transition: {
+                duration: 1.5,
+                delay: 0.5,
+                ease: "easeInOut"
+            }
+        })
+    };
+
+    // Effects
     useEffect(() => {
         const handleScroll = () => {
             const scrollY = window.scrollY;
             const windowHeight = window.innerHeight;
 
-            // Change hero background when showreel section comes into view
-            if (scrollY > windowHeight * 0.5) {
-                setHeroBgImage(secondimg);
-            } else {
-                setHeroBgImage(herobg);
-            }
+            // Change hero background
+            setHeroBgImage(scrollY > windowHeight * 0.5 ? secondimg : herobg);
 
             // Hero content fade out
             if (heroContentRef.current) {
@@ -50,14 +155,11 @@ const ProductionWizards = () => {
                 showreelRef.current.style.transform = `translateY(-${slideUpAmount * 0.7}px)`;
             }
 
-            if (scrollY > windowHeight * 0.3 && showreelTitleRef.current) {
-                showreelTitleRef.current.style.opacity = '1';
-                showreelTitleRef.current.style.transform = 'translateY(0)';
-            }
-
-            if (scrollY > windowHeight * 0.9 && showreelContentRef.current) {
-                showreelContentRef.current.style.opacity = '1';
-                showreelContentRef.current.style.transform = 'translateY(0)';
+            // Check if services section is in view
+            if (servicesSectionRef.current) {
+                const rect = servicesSectionRef.current.getBoundingClientRect();
+                const isInView = rect.top < windowHeight * 0.8;
+                setServicesInView(isInView);
             }
         };
 
@@ -65,103 +167,14 @@ const ProductionWizards = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    useEffect(() => {
-        // Set up interval for tag rotation
-        const interval = setInterval(() => {
-            setCurrentTagIndex((prevIndex) => (prevIndex + 1) % tags.length);
-        }, 3000); // Change tag every 3 seconds
-
-        return () => clearInterval(interval);
-    }, [tags.length]);
-
-    useEffect(() => {
-        // Simulate loading
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-            // Trigger animations after loading
-            if (headingRef.current) {
-                headingRef.current.classList.add('animate-fadeInUp');
-            }
-            if (paragraphRef.current) {
-                paragraphRef.current.classList.add('animate-fadeInUp');
-            }
-            if (buttonRef.current) {
-                buttonRef.current.classList.add('animate-fadeInUp');
-            }
-        }, 1500);
-
-        return () => clearTimeout(timer);
-    }, []);
-
-    const controls = useAnimation();
-
-    useEffect(() => {
-        // Initialize Lenis for smooth scrolling
-        const lenis = new Lenis({
-            lerp: 0.1,
-            smooth: true,
-        });
-
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-
-        requestAnimationFrame(raf);
-
-        // Animation sequence
-        const sequence = async () => {
-            await controls.start("visible");
-        };
-
-        sequence();
-    }, [controls]);
-
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.3,
-            },
-        },
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, x: -50 },
-        visible: {
-            opacity: 1,
-            x: 0,
-            transition: {
-                duration: 0.8,
-                ease: [0.6, -0.05, 0.01, 0.99],
-            },
-        },
-    };
-
-    // const fadeInVariants = {
-    //     hidden: { opacity: 0 },
-    //     visible: {
-    //         opacity: 1,
-    //         transition: {
-    //             duration: 0.8,
-    //             ease: "easeInOut",
-    //         },
-    //     },
-    // };
-
-    const [currentTagIndex, setCurrentTagIndex] = useState(0);
-    const [displayText, setDisplayText] = useState('');
-    const [isTyping, setIsTyping] = useState(true);
-
+    // Typing animation for tags
     useEffect(() => {
         const tagInterval = setInterval(() => {
             setCurrentTagIndex((prev) => (prev + 1) % tags.length);
-        }, 3000); // Change tag every 3 seconds
+        }, 3000);
 
         return () => clearInterval(tagInterval);
-    }, []);
+    }, [tags.length]);
 
     useEffect(() => {
         setIsTyping(true);
@@ -178,17 +191,35 @@ const ProductionWizards = () => {
                 setIsTyping(false);
                 clearInterval(typingInterval);
             }
-        }, 100); // Typing speed (adjust as needed)
+        }, 100);
 
         return () => clearInterval(typingInterval);
     }, [currentTagIndex]);
 
+    // Initialize Lenis for smooth scrolling
+    useEffect(() => {
+        const lenis = new Lenis({
+            lerp: 0.1,
+            smooth: true,
+            smoothTouch: true
+        });
 
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
 
-    const fadeInVariants = {
-        hidden: { opacity: 0 },
-        visible: { opacity: 1 }
-    };
+        requestAnimationFrame(raf);
+    }, []);
+
+    // Simulate loading
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1500);
+
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <div className="bg-black text-white overflow-x-hidden" style={{ height: '300vh' }}>
@@ -216,28 +247,16 @@ const ProductionWizards = () => {
                         transition={{ delay: 0.5, duration: 0.8 }}
                         className="hidden md:flex fixed left-0 top-2/3 transform -translate-y-1/2 h-64 w-10 bg-[#D700E6] backdrop-blur-sm shadow-lg rounded-r-xl z-20 flex-col items-center justify-center space-y-6"
                     >
-                        <a
-                            href="#"
-                            className="text-white hover:text-blue-600 transition-colors duration-300"
-                        >
+                        <a href="#" className="text-white hover:text-blue-600 transition-colors duration-300">
                             <FaFacebook className="w-5 h-5" />
                         </a>
-                        <a
-                            href="#"
-                            className="text-white hover:text-blue-400 transition-colors duration-300"
-                        >
+                        <a href="#" className="text-white hover:text-blue-400 transition-colors duration-300">
                             <FaTwitter className="w-5 h-5" />
                         </a>
-                        <a
-                            href="#"
-                            className="text-white hover:text-pink-600 transition-colors duration-300"
-                        >
+                        <a href="#" className="text-white hover:text-pink-600 transition-colors duration-300">
                             <FaInstagram className="w-5 h-5" />
                         </a>
-                        <a
-                            href="#"
-                            className="text-white hover:text-blue-700 transition-colors duration-300"
-                        >
+                        <a href="#" className="text-white hover:text-blue-700 transition-colors duration-300">
                             <FaLinkedin className="w-5 h-5" />
                         </a>
                     </motion.div>
@@ -250,7 +269,8 @@ const ProductionWizards = () => {
                     >
                         <div className="max-w-2xl z-10 mx-left">
                             <motion.h1
-                                variants={itemVariants}
+                                ref={headingRef}
+                                variants={fadeUpVariants}
                                 className="mt-[6rem] text-4xl md:text-7xl font-bold text-white leading-tight mb-6"
                             >
                                 We Transform <span className="text-gradient-to-br from-customBlue to-customPink">Ideas</span><br />
@@ -258,12 +278,10 @@ const ProductionWizards = () => {
                             </motion.h1>
 
                             <motion.p
-                                variants={itemVariants}
+                                variants={fadeUpVariants}
                                 className="text-gray-200 text-md mb-8 leading-relaxed"
                             >
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-                                nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                We craft digital experiences that captivate audiences and drive business growth through innovative design and cutting-edge technology solutions.
                             </motion.p>
 
                             <motion.div
@@ -305,13 +323,13 @@ const ProductionWizards = () => {
 
                             <motion.div
                                 variants={fadeInVariants}
-                                className="flex flex-col sm:flex-row gap-4 "
+                                className="flex flex-col sm:flex-row gap-4"
                             >
                                 <motion.button
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.8 }}
-                                    className=" border-2 border-[#D700E6]    hover:bg-gradient-to-br hover:from-[#2703D9] hover:to-[#D700E6] text-white font-bold py-3 px-8 rounded-full transition duration-300   "
+                                    className="border-2 border-[#D700E6] hover:bg-gradient-to-br hover:from-[#2703D9] hover:to-[#D700E6] text-white font-bold py-3 px-8 rounded-full transition duration-300"
                                 >
                                     Contact us
                                 </motion.button>
@@ -319,7 +337,7 @@ const ProductionWizards = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.9 }}
-                                    className="border-2 border-transparent  bg-gradient-to-br from-[#2703D9] to-[#D700E6] hover:bg-gradient-to-br hover:from-transparent hover:to-transparent hover:border-[#D700E6] text-white  font-bold py-3 px-8 rounded-full transition duration-300"
+                                    className="border-2 border-transparent bg-gradient-to-br from-[#2703D9] to-[#D700E6] hover:bg-gradient-to-br hover:from-transparent hover:to-transparent hover:border-[#D700E6] text-white font-bold py-3 px-8 rounded-full transition duration-300"
                                 >
                                     Our Services
                                 </motion.button>
@@ -329,18 +347,31 @@ const ProductionWizards = () => {
                 </div>
             </section>
 
-            {/* Showreel Section with Animated Text */}
+            {/* Showreel Section */}
             <section
                 ref={showreelRef}
-                className="relative h-[120vh] flex flex-col justify-center z-20 bg-[#190321] transition-transform duration-300 ease-out"
-                style={{ top: '100vh' }}
+                className="relative h-[120vh] flex flex-col justify-center z-20 bg-gradient-to-br  relative overflow-hidden transition-transform duration-300 ease-out"
+                style={{ top: '100vh', backgroundColor: '#1a0d2e' }}
+
             >
+
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-20">
+                    <div className="absolute top-10 left-10 w-32 h-32 bg-pink-500 rounded-full blur-3xl"></div>
+                    <div className="absolute top-40 right-20 w-24 h-24 bg-purple-500 rounded-full blur-2xl"></div>
+                    <div className="absolute bottom-20 left-20 w-40 h-40 bg-pink-400 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-40 right-10 w-28 h-28 bg-purple-400 rounded-full blur-2xl"></div>
+                </div>
                 {/* Animated Text Section */}
-                <div className="w-full text-center my-20">
+                <div className="w-full text-center mt-5">
                     <div className="inline-block mx-auto max-w-6xl">
-                        <span
+                        <motion.span
                             ref={showreelTitleRef}
-                            className="block text-5xl md:text-6xl lg:text-8xl font-bold uppercase opacity-0 translate-y-12 transition-all duration-500 ease-out"
+                            className="block text-xl md:text-6xl lg:text-5xl font-bold uppercase"
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
                             style={{
                                 fontFamily: '"Oswald", sans-serif',
                                 letterSpacing: '0',
@@ -355,28 +386,162 @@ const ProductionWizards = () => {
                             }}
                         >
                             HDS DIGITAL SOLUTION
-                        </span>
+                        </motion.span>
                     </div>
                 </div>
 
-                {/* Showreel Content */}
-                <div
-                    ref={showreelContentRef}
-                    className="w-full opacity-0 translate-y-12 transition-all duration-500 ease-out px-4 sm:px-6 lg:px-8"
+                {/* Services Section */}
+                <motion.div
+                    ref={servicesSectionRef}
+                    className="min-h-screen  relative overflow-hidden"
+                    // style={{backgroundColor: '#1a0d2e'}}
                 >
-                    <div className="max-w-7xl mx-auto text-center">
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
-                            Elevating Your Business Through Tailored Solutions.
-                        </h1>
-                        <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-                            At our agency, we believe that every business has unique challenges and aspirations.
-                            That's why we specialize in providing tailored solutions designed.
-                        </p>
-                        <button className="bg-white hover:bg-gray-200 text-black font-semibold py-3 px-8 rounded-full text-lg transition duration-300 transform hover:scale-105">
-                            Know About Us
-                        </button>
+
+
+                    <div className="container mx-auto px-4 py-16 relative z-10 2xl:max-w-[80%]">
+                        {/* Header */}
+                        <motion.div
+                            className="text-center mb-16"
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                        >
+                            <motion.div
+                                className="flex items-start justify-start mb-4"
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.4 }}
+                            >
+                                <span className="text-[#D600E6] text-lg font-medium">Our services</span>
+                                <svg className="w-6 h-6 text-[#D600E6] ml-2" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                                </svg>
+                            </motion.div>
+                            <motion.h1
+                                className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight text-start"
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8, delay: 0.3 }}
+                            >
+                                Our Mindful Approach to Digital Growth
+                            </motion.h1>
+                        </motion.div>
+
+                        <div className="grid lg:grid-cols-3 gap-8 items-start">
+                            {/* Left Side - Service Cards */}
+                            <div className="lg:col-span-2">
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    {services.map((service, index) => (
+                                        <motion.div
+                                            key={index}
+                                            className="bg-purple-900/40 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-6 hover:bg-purple-800/50 hover:border-pink-400/40 transition-all duration-700 ease-out"
+                                            initial={{ opacity: 0, y: 50 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true, margin: "-50px" }}
+                                            transition={{
+                                                duration: 0.8,
+                                                delay: 0.1 * index,
+                                                ease: [0.22, 1, 0.36, 1]
+                                            }}
+                                        >
+                                            <motion.div
+                                                initial={{ scale: 0.8 }}
+                                                whileInView={{ scale: 1 }}
+                                                viewport={{ once: true }}
+                                                transition={{ delay: 0.1 * index + 0.2 }}
+                                            >
+                                                {service.icon}
+                                            </motion.div>
+                                            <motion.h3
+                                                className="text-xl font-bold text-white mb-3"
+                                                initial={{ opacity: 0 }}
+                                                whileInView={{ opacity: 1 }}
+                                                viewport={{ once: true }}
+                                                transition={{ delay: 0.1 * index + 0.3 }}
+                                            >
+                                                {service.title}
+                                            </motion.h3>
+                                            <motion.p
+                                                className="text-gray-300 text-sm leading-relaxed mb-4"
+                                                initial={{ opacity: 0 }}
+                                                whileInView={{ opacity: 1 }}
+                                                viewport={{ once: true }}
+                                                transition={{ delay: 0.1 * index + 0.4 }}
+                                            >
+                                                {service.description}
+                                            </motion.p>
+                                            <motion.button
+                                                className="text-[#D600E6] hover:text-pink-300 font-medium text-sm transition-colors"
+                                                initial={{ opacity: 0 }}
+                                                whileInView={{ opacity: 1 }}
+                                                viewport={{ once: true }}
+                                                transition={{ delay: 0.1 * index + 0.5 }}
+                                            >
+                                                Read More
+                                            </motion.button>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Right Side - Progress Bars */}
+                            <div className="lg:col-span-1">
+                                <div className="space-y-8">
+                                    {progressItems.map((item, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, x: 50 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{
+                                                duration: 0.8,
+                                                delay: 0.1 * index + 0.4,
+                                                ease: [0.22, 1, 0.36, 1]
+                                            }}
+                                        >
+                                            <div className="flex justify-between items-center mb-3">
+                                                <motion.span
+                                                    className="text-white font-medium text-sm md:text-base"
+                                                    initial={{ opacity: 0 }}
+                                                    whileInView={{ opacity: 1 }}
+                                                    viewport={{ once: true }}
+                                                    transition={{ delay: 0.1 * index + 0.5 }}
+                                                >
+                                                    {item.label}
+                                                </motion.span>
+                                                <motion.span
+                                                    className="text-white font-bold text-xl"
+                                                    initial={{ opacity: 0 }}
+                                                    whileInView={{ opacity: 1 }}
+                                                    viewport={{ once: true }}
+                                                    transition={{ delay: 0.1 * index + 0.6 }}
+                                                >
+                                                    {item.percentage}%
+                                                </motion.span>
+                                            </div>
+                                            <div className="w-full bg-purple-900/60 rounded-full h-2">
+                                                <motion.div
+                                                    className="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full"
+                                                    initial={{ width: 0 }}
+                                                    whileInView={{ width: `${item.percentage}%` }}
+                                                    viewport={{ once: true }}
+                                                    transition={{
+                                                        duration: 1.5,
+                                                        delay: 0.1 * index + 0.7,
+                                                        ease: "easeInOut"
+                                                    }}
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             {/* Spacer */}
