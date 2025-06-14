@@ -350,7 +350,7 @@ const ProductionWizards = () => {
             {/* Showreel Section */}
             <section
                 ref={showreelRef}
-                className="relative h-[120vh] flex flex-col justify-center z-20 bg-gradient-to-br  relative overflow-hidden transition-transform duration-300 ease-out"
+                className="relative h-[130vh] flex flex-col justify-center z-20 bg-gradient-to-br  relative overflow-hidden transition-transform duration-300 ease-out"
                 style={{ top: '100vh', backgroundColor: '#1a0d2e' }}
 
             >
@@ -437,7 +437,7 @@ const ProductionWizards = () => {
                                     {services.map((service, index) => (
                                         <motion.div
                                             key={index}
-                                            className="bg-purple-900/40 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-6 hover:bg-purple-800/50 hover:border-pink-400/40 transition-all duration-700 ease-out"
+                                            className="bg-purple-900/40 backdrop-blur-sm border border-gradient-to-r from-pink-500 to-purple-500 rounded-2xl p-6 hover:bg-purple-800/50 hover:border-pink-400/40 transition-all duration-700 ease-out "
                                             initial={{ opacity: 0, y: 50 }}
                                             whileInView={{ opacity: 1, y: 0 }}
                                             viewport={{ once: true, margin: "-50px" }}
@@ -488,7 +488,7 @@ const ProductionWizards = () => {
                             </div>
 
                             {/* Right Side - Progress Bars */}
-                            <div className="lg:col-span-1">
+                            <div className="lg:col-span-1 top-[7rem] relative justify-center">
                                 <div className="space-y-8">
                                     {progressItems.map((item, index) => (
                                         <motion.div
@@ -524,7 +524,7 @@ const ProductionWizards = () => {
                                             </div>
                                             <div className="w-full bg-purple-900/60 rounded-full h-2">
                                                 <motion.div
-                                                    className="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full"
+                                                    className="bg-[#D600E6] h-2 rounded-full"
                                                     initial={{ width: 0 }}
                                                     whileInView={{ width: `${item.percentage}%` }}
                                                     viewport={{ once: true }}
