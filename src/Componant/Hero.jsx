@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+
 import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import Lenis from '@studio-freight/lenis';
 import herobg from '../assets/herobg new1.png';
