@@ -15,10 +15,16 @@ function App() {
       <Header/>
         <Hero/>
         <SmoothScrollWebsite/>
-      
+
       {/*<Footer/>*/}
     </>
   )
 }
+
+
+
+
+
+
 
 export default App
