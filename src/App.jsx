@@ -21,6 +21,6 @@ function App() {
   )
 }
 
-gnvgv
+
 
 export default App
