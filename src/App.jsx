@@ -20,7 +20,4 @@ function App() {
     </>
   )
 }
-
-vnvvb
-
 export default App
